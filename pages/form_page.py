@@ -1,13 +1,15 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 import allure
 
 class FormPage(BasePage):
-    NAME_INPUT = (By.ID, "name")
-    PASSWORD_INPUT = (By.ID, "password")
-    DRINK_CHECKBOX = (By.CSS_SELECTOR, "input[name='drink'][value='{value}']")
-    COLOR_RADIO = (By.XPATH, "//input[@name='color' and @value='{value}']")
-    AUTOMATION_RADIO = (By.CSS_SELECTOR, "input[name='automation'][value='{value}']")
+    NAME_INPUT = (By.ID, "name-input")
+    PASSWORD_INPUT = (By.CSS_SELECTOR, "input[type='password']")
+    DRINK_CHECKBOX = (By.CSS_SELECTOR, "input[type='checkbox'][value='{value}']")
+    COLOR_RADIO = (By.CSS_SELECTOR, "input[type='radio'][value='{value}']")
+    AUTOMATION_SELECTOR = (By.ID, "automation")
     EMAIL_INPUT = (By.ID, "email")
     MESSAGE_TEXTAREA = (By.ID, "message")
     SUBMIT_BTN = (By.XPATH, "//button[text()='submit']")
@@ -39,13 +41,17 @@ class FormPage(BasePage):
         return self
 
     def select_color(self,color):
-        locator = (By.XPATH, self.COLOR_RADIO[1].format(value=color))
-        self.click(locator)
+        with allure.step(f"Selected color: {color}"):
+            locator = (By.CSS_SELECTOR, self.COLOR_RADIO[1].format(value=color))
+            self.click(locator)
         return self
 
     def select_automation_option(self,option):
-        locator = (By.CSS_SELECTOR, self.AUTOMATION_RADIO[1].format(value=option))
-        self.click(locator)
+        with allure.step(f"Select automation option: {option}"):
+            select_element = self.wait.until(EC.presence_of_element_located(self.AUTOMATION_SELECTOR))
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", select_element)
+            select = Select(select_element)
+            select.select_by_visible_text(option)
         return self
 
     def fill_email(self,email):

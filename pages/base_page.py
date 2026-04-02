@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver,10)
+        self.wait = WebDriverWait(driver,30)
 
     def open(self, url):
         with allure.step(f'Open URL: {url}'):
