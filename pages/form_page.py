@@ -12,10 +12,11 @@ class FormPage(BasePage):
     AUTOMATION_SELECTOR = (By.ID, "automation")
     EMAIL_INPUT = (By.ID, "email")
     MESSAGE_TEXTAREA = (By.ID, "message")
-    SUBMIT_BTN = (By.XPATH, "//button[text()='submit']")
+    AUTOMATION_TOOLS_LABELS = (By.XPATH, "//label[text()='Automation tools']/following-sibling::ul/li")
+    AUTOMATION_TOOLS_LABELS_XPATH = (By.XPATH, "//label[text()='Automation tools']/following-sibling::ul/li")
+    SUBMIT_BTN = (By.ID, "submit-btn")
 
-    AUTOMATION_TOOLS_LABELS = (By.CSS_SELECTOR, "input[name='tools'] + label")
-    AUTOMATION_TOOLS_LABELS_XPATH = (By.XPATH, "//input[@name='tools']/following-sibling::label")
+
 
     def __init__(self,driver):
         super().__init__(driver)
@@ -58,18 +59,15 @@ class FormPage(BasePage):
         self.send_keys(self.EMAIL_INPUT, email)
         return self
 
-
     def fill_message_with_tools_info(self):
         tools_elements = self.find_elements(self.AUTOMATION_TOOLS_LABELS)
         if not tools_elements:
             tools_elements = self.find_elements(self.AUTOMATION_TOOLS_LABELS_XPATH)
 
         tools_names = [el.text.strip() for el in tools_elements if el.text.strip()]
+
         count = len(tools_names)
-        if count > 0:
-            longest_tool = max(tools_names, key=len)
-        else:
-            longest_tool = "None"
+        longest_tool = max(tools_names, key=len) if count > 0 else "None"
 
         message_text = f"Number of tools: {count}, Longest tool name: {longest_tool}"
         with allure.step(f"Fill message with: {message_text}"):
